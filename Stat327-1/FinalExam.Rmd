@@ -1,0 +1,151 @@
+---
+title: "STAT 327-1 Final Exam"
+author: "Jen Birstler"
+output: html_document
+---
+
+Name: Tess Steplyk
+
+Email: steplyk@wisc.edu
+
+
+##Problem 1
+(40 points total) Problem 1 uses the built-in data set `iris`.
+
+###Part 1
+(10 points) There are three species studied in this data set. We're first interested in the sepal lengths. Create a data frame of three rows and two columns: the first column is the species name and the second column is the means of sepal lengths for those species. (You can create a data frame with columns of vectors `x` and `y` by `data.frame(x, y)`)
+
+```{r}
+x <- levels(iris$Species)
+y <- mean(iris$Sepal.Length)
+data.frame(x, y)
+```
+
+###Part 2
+(10 points) Suppose we suspect that `iris` has been tampered with in the following manner:
+
+- Rows with row numbers divisible by 15 have been completely fabricated and should be removed.
+- Half of the value of petal width has been added to the sepal length for each iris in the study, according to the equation below. Correct the values of sepal length.
+
+$Sepal.Length_{incorrect} = \frac{Petal.Width}{2} + Sepal.Length_{correct}$
+
+Add two columns to the data frame created in Problem 1.1: the first column is the new means of sepal length of the correct data, and the second column is the difference in means between the incorrect and correct data. (You may want to create a new data frame for the corrected data set instead of modifying the original `iris`.)
+
+```{r}
+iris1 <- iris
+iris1$Sepal.Length <- iris1$Sepal.Length - (iris1$Petal.Width / 2)
+iris1 <- iris1[-c(seq(from=15, to=150, by=15)), ]
+
+iris1$Mean_Sepal.Length = mean(iris1$Sepal.Length)
+iris1$Diff.Means = (mean(iris$Sepal.Length) - mean(iris1$Sepal.Length))
+```
+Should I remove the incorrect sepal lenghts?
+
+###Part 3
+(10 points) Unfortunately, we've already printed out a poster with the means found in Problem 1.1. For species *I. setosa* only, conduct statistical test to see if there is a significant difference between the mean in the corrected data set and the value we printed on the poster. Since it'll cost more money to have the poster reprinted, we'll only change it if a significant difference at the $\alpha = .1$ level is found. Should we reprint the poster? What information leads to your conclusion?
+
+```{r}
+xx <- rnorm(which(iris$Species == "setosa")) 
+yy <- rnorm(which(iris1$Species == "setosa"))
+t.test(xx, yy)
+```
+***Fail to reject the null hypothesis at 0.1, therefore the data is not statistically significant. We then would have to reprint the poster because the non-significant p-value means there's insufficient evidence to reject the null hypothesis that means are equal.***
+
+###Part 4
+(10 points) Regardless of your answer in Problem 1.3, your adviser says the poster should be reprinted anyway. While we're at it, let's prepare another plot for the poster. Create a boxplot of the sepal lengths for each species. Draw a colored line segment overlaid the *I. setosa* species boxplot that represents the 90% confidence interval of the mean. (Hint: the coordinate of the center of a boxplot is the index of that boxplot along the axis.)
+
+```{r}
+col<-colors()
+
+m= matrix(x(data = c(1,2,3), nrow=1, ncol=3))
+layout(m)
+
+
+boxplot(iris1$Sepal.Length~iris1$Species)
+MS <- mean(iris1$Sepal.Length[which(iris$Species == "setosa")])
+lines(confint(MS), col="red")
+
+
+```
+
+
+##Problem 2
+(20 points total) Problem 2 uses the built-in data set `VADeaths`.
+
+###Part 1
+(10 points) Which demographic (in terms of sex, age, and rural or urban residence) has the highest death rate? Which has the lowest? The `arr.ind` argument of `which()` might be useful. Full credit will be given when the output (either to the console or stored as a variable) shows the answer. For example, an acceptable output would be of the form `"Rural Male" "50-54"`, not just the number `11.7`.
+
+```{r}
+VA <- VADeaths
+
+which(VA[,] == min(VA), arr.ind = TRUE) 
+which(VA[,] == max(VA), arr.ind = TRUE)
+
+```
+***Highest death rate among the whole data is for URBAN MALE 70-74. Lowest death rate among RURAL FEMALE 50-54.***
+
+
+###Part 2
+(5 points) On average, are death rates higher for urban or rural population groups?
+
+```{r}
+rural<-mean(VA[1:2,])
+urban<-mean(VA[3:4,])
+```
+***The urban death rate is higher than the rural.***
+
+
+###Part 3
+(5 points) Plot a horizontal stacked barplot of the death rates. There should be one barplot for each column (sex, and rural or urban residence) with "layers" of each barplot representing age categories. Make sure all the barplot labels are visible when the document is knit.
+
+```{r}
+colnames(VA)[which.max(VA)]
+barplot(VA,main="Death Rates", space = 0, horiz=TRUE, cex.axis = .5, cex.names = .5)
+```
+
+##Problem 3
+(15 points total) Questions in this section are unrelated to each other.
+
+###Part 1
+(5 points) You've suddenly forgotten what the F distribution's probability density function (pdf) looks like. Create a `plot` of the pdf of this distribution. Pick any parameter(s) and an appropriate range of x values. Plot a smooth pdf, not points .
+
+```{r}
+set.seed(123123)
+g <- rnorm(1000)
+h <- dnorm(g)
+plot(g, h)
+pdf<-lines(density(g),col="red", lwd=5)
+```
+
+###Part 2
+(5 points) Are the variances of body temperature of `beaver1` and `beaver2` equal? Conduct a test and explain the results.
+
+```{r}
+b1<-beaver1$temp
+b2<-beaver2$temp
+var.test(b1,b2)
+```
+***The variances of body temperature of 'beaver1' and 'beaver2' are not equal. Using the F test to compare these two variances, you can reject the null hypothesis. The significant p-value means there is sufficient evidence to reject the null hypothesis that the variances are equal.***
+
+###Part 3
+(5 points) I think that heavier cars are slower in their quarter mile time. Using the `mtcars` data set, create a linear model to test this. Check the model assumptions. Is this a valid model? How do you know? Do the results support my claim?
+
+```{r}
+cars<-mtcars
+yy <- cars$wt
+xx <- cars$qsec
+mm = lm(yy ~ xx, data = cars)
+summary(mm)
+```
+***There is sufficient evidence to reject the null hypothesis, therefore the data is statistically significant and the model is valid. The results support the claim because the p-value if the intercepts is very small, and very significant evidence to reject that heaviers cars are not slower in their quarter mile time.***
+
+
+##Bonus
+
+1. (1 point) Just as `red` is a valid color, so is `darkgoldenrod4`. In fact, there are 657 colors in R that you can call by name. Find the list of colors, show the code to generate that list, and use an obscure color for the confidence interval line in Part 1.4.
+```{r}
+colors()
+```
+2. (1 point) From the list of colors in Bonus 1, pick one at random such that each color has equal probability of being chosen. Use this as the color for the line in Part 1.4.
+3. (1 point) Identify your favorite function in base R and explain why it is your favorite. This function does not necessarily have to be one we learned in class.
+***I enjoy using the sort() feature on different data frames. I like to easily see the seperated data before I use or plot it.***

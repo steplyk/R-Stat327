@@ -1,0 +1,51 @@
+---
+title: "Sect4Q4"
+author: "Tess Steplyk"
+date: "February 2, 2016"
+output: word_document
+---
+
+#1
+dim(mtcars)[2]
+
+#2
+table(mtcars$gear, mtcars$cyl)
+2
+
+#3
+steplykQ4
+mean(steplykQ4$age[steplykQ4$sex == "F"])
+
+#4
+mean(steplykQ4$age[steplykQ4$sex == "M"] && steplykQ4$age[steplykQ4$eye.color == "brown"])
+19+
+
+----
+
+order(steplykQ4, decreasing = T)
+
+g <- sorted.steplykQ4 <- steplykQ4[with(steplykQ4, order(-xtfrm(eye.color), weight)), ]
+
+sorted.steplykQ4[sorted.steplykQ4$sex == "M", ][3,]
+
+----
+
+summary(CO2)
+
+#9
+mean(CO2$uptake)
+
+#10
+mean(CO2$uptake[CO2$Type == "Quebec"])
+
+#11
+sd(CO2$uptake[CO2$Type == "Quebec"])
+
+#12
+mean(CO2$uptake[CO2$Type == "Mississippi"])
+
+#13
+sd(CO2$uptake[CO2$Type == "Mississippi"])
+
+#14
+boxplot(CO2$uptake~CO2$Type)

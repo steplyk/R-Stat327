@@ -1,0 +1,210 @@
+echo "# R-Stat327" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/steplyk/R-Stat327.git
+git push -u origin master
+
+# STAT 327 Homework 4
+We'll grade your homework by opening your "hw4.Rmd" file in RStudio (in a directory containing "farm.csv", "scores.csv", and "hw4freeCode.R"), clicking "Knit HTML", reading the HTML output, and reading your "hw4.Rmd" file. You should write R code anywhere you see an empty R code chunk.
+
+Name: Tess Steplyk
+
+Email: steplyk@wisc.edu
+
+# Part 1: A "jackknife" procedure to find the most outlying point in a linear relationship between two variables
+
+First load the "XML" package to give access to `readHTMLTable()` and the "RCurl" package for access to `getURL()`.
+```{r}
+if (!require("XML")) {
+  install.packages("XML") # do this once per lifetime
+  stopifnot(require("XML")) # do this once per session
+}
+if (!require("RCurl")) {
+  install.packages("RCurl") # do this once per lifetime
+  stopifnot(require("RCurl")) # do this once per session
+}
+```
+
+Use R to get the land area (sq. miles) of each state from the second table (labeled "Land area") in the web page https://simple.wikipedia.org/wiki/List_of_U.S._states_by_area. Hint: you can use `tables = readHTMLTable(getURL("https://simple.wikipedia.org/wiki/List_of_U.S._states_by_area"))` to read the data. Include code to remove the commas from the numbers.
+```{r}
+tables = readHTMLTable(getURL("https://simple.wikipedia.org/wiki/List_of_U.S._states_by_area", 
+                              ssl.verifypeer = FALSE))
+land = data.frame(tables[2])
+land = land[-c(51),]
+land = with(land, land[order(land$NULL.State),])
+land = setNames(land, c("rank","state","km","area"))
+land.a = land[,4]
+land.area = factor(land.a)
+land.area = gsub("," , "", land.area)
+land.area = as.numeric(land.area)
+```
+
+Use R to get farm areas of states from "farm.csv". (Note: I got the data in 2013 from the spreadsheet in the row labeled "825 - Farms--Number and Acreage by State [Excel 131k] ..." at http://www.census.gov/compendia/statab/cats/agriculture/farms_and_farmland.html. I took the 2010 acreage (1000) column, multiplied by 1000, and divided by 640 (sq. miles per acre). You do not need to use this spreadsheet--just use "farm.csv".)
+```{r}
+farm <- read.csv("farm.csv")
+farm = setNames(farm, c("state", "farm"))
+f = farm[,2]
+```
+
+Create a data frame called "area" whose columns are "state", "farm", and "land", which contain state names, farm areas, and land areas, respectively. Hint: the states aren't in the same order in the two data sets, so getting the "area" data frame right requires a little care.
+```{r}
+new <- merge(farm, land, all.x=T)
+n = subset(new, select = -c(3:4))
+```
+
+Make a scatterplot of y = farm area vs. x = land area.
+```{r}
+plot(x = land.a, y = f, xlab = "land area", ylab = "farm area")
+```
+
+There are two prominent outliers. Use `identify()` to find their indices.
+
+Unfortunately, `identify()` doesn't work on an R graph that we're viewing through an HTML page. We can use the RStudio menu command "Chunks > Run all" to run all the code in this file in the console, and then click on the graph in RStudio's "Plots" tab. Once you know the indices, just assign them to variables so you can use them later. Then comment out your call to identify().
+```{r}
+plot(land.a, f)
+identify(x=land.a, y=f, plot=TRUE)
+```
+
+The two outliers are Texas, which fits the roughly linear trend of the rest of the data, and Alaska, which does not fit.
+
+Make a linear model of y = farm area vs. x = land area. Make your scatterplot again, and this time add the regression line to it. Then make a linear model of the same data, except with Alaska removed. Add that regression line, colored red, to your scatterplot.
+```{r}
+fa = lm(f~land.a)
+plot(x = land.a, y = f, xlab = "land area", ylab = "farm area")
+abline(fa, col="red")
+```
+
+Notice that, with respect to the original regression line, Texas has the biggest residual (difference in actual and predicted y), because Alaska pulled the line down toward itself. But really Alaska is the outlier! Next we'll do a "jackknife" procedure to discover computationally that Alaska is the most important outlier.
+
+Make a plot of the residuals for the original model. (Hint: they're available in the output of `lm()`.)
+```{r}
+# ...
+```
+
+Notice again that the Texas residual is bigger than the Alaska residual.
+
+Next use a loop to create n=50 models. In step i, make a model of the data with observation i removed. Then predict the value of y[i] from that model, and find the residual (difference) between (the removed) y[i] and the prediction. Save these residuals in a vector `r.jack`. (A "jackknife" procedure works by removing one observation (or several) from a data set, and then making a prediction from that smaller data set, and repeating this for each observation.)
+```{r}
+# ...
+```
+
+Plot these "jackknife" residuals.
+```{r}
+# ...
+```
+
+Notice now that Alaska is clearly the real outlier.
+
+# Part 2: ggplot2 graphics
+
+Use `ggplot2` to solve make several graphs. First, here's code to load, or install and load, the package.
+```{r}
+if (!require("ggplot2")) {
+  install.packages("ggplot2")
+  stopifnot(require("ggplot2"))
+  }
+```
+
+1. Consider the built-in data set `warpbreaks`. (See `?warpbreaks`, http://en.wikipedia.org/wiki/Warp_%28weaving%29, and http://en.wikipedia.org/wiki/Power_loom#Operation.) Make a histogram of the numbers of warp breaks.
+
+```{r}
+hist(warpbreaks$breaks)
+```
+
+2. Make a density plot of the numbers of warp breaks.
+```{r}
+plot(warpbreaks$breaks)
+```
+
+3. Make two density plots of warp breaks, using a different color for each wool type, on a single panel. Does the wool type have a strong effect on the number of breaks?
+```{r}
+ggplot(data = mtcars, aes(x=mpg, y=qsec, color=factor(cyl), shape=factor(gear))) + geom_point()
+plot(warpbreaks$breaks)
+plot(warpbreaks$breaks)
+```
+
+4. Make three density plots of warp breaks, using a different color for each tension level, on a single panel. How does tension seem to affect the number of breaks?
+```{r}
+# ...
+```
+
+5. "Old Faithful" is a geyser in Yellowstone National Park that erupts on a remarkably regular schedule (http://en.wikipedia.org/wiki/Old_Faithful). Make a scatterplot of waiting time ($y$) vs. most recent eruption time ($x)$ from the built-in `faithful` data set. (See `?faithful`.) Include a simple linear regression line. What is the most striking feature of this plot?
+```{r}
+# ...
+```
+
+# Part 3: Web-scraping
+
+```{r}
+rm(list=ls())
+```
+
+First load the "XML" package to give access to `readHTMLTable()`.
+```{r}
+if (!require("XML")) {
+  install.packages("XML") # do this once per lifetime
+  require("XML") # do this once per session
+  }
+```
+
+At the bottom of the [Internet Movie Database website](http://www.imdb.com) there's a link to the [Top 250](http://www.imdb.com/chart/top). At the "Top 250" page there's a list of 250 movies, with a link to each movie. The first movie is [The Shawshank Redmption](http://www.imdb.com/title/tt0111161/?ref_=chttp_tt_1).
+
+With your browser on the "Top 250" page, you can do "right-click > view page source" (in Firefox or Chrome; in Safari, first do "Safari > Preferences > Advanced" and check "Show Develop menu in menu bar") to see the HTML code that creates the page. (You do not need to learn HTML for this homework.)
+
+Search in the HTML source page for "Shawshank", and you'll see that it occurs on line 775. Search for "Godfather", and you'll see that it occurs twice, on line 815 for "The Godfather" and on line 885 for "The Godfather: Part II". For each of these three lines, the preceding line contains a link, relative to the main IMDB URL, to that movie's page. Use grep() to figure out what small string is common to the 250 lines, like these three, that contain links to the top 250 movies.
+
+Notice that line 774 for "The Shawshank Redemption" includes the text "/title/tt0111161". Pasting this onto "http://www.imdb.com" gives "http://www.imdb.com/title/tt0111161", which is a link to the first movie's page. Adding "/fullcredits" gives "http://www.imdb.com/title/tt0111161/fullcredits", which is a link to the full cast and crew. Search this "fullcredits" page for "Produced" and you'll see that "The Shawshank Redemption" was produced by "Liz Glotter", "David V. Lester", and "Niki Marvin".
+
+Write code that does the following:
+
+* Use readLines() to read "http://www.imdb.com/chart/top" into a character string vector
+    + Select the 250 lines containing links to the 250 movies
+    + From these 250 lines, select the 250 strings like "/title/tt0111161" from which you can form links to the 250 movies
+* Create an empty list of producers, e.g. "producers = list()"
+* Read the "fullcredits" page of each movie
+    + Strip out the title of the movie
+    + Use readHTMLTable() to read all the tables into a list of dataframes; figure out which dataframe has the producers
+    + Save the vector of producers in a list, doing something like "producers[[title]] = ...", where "..." is the vector of producers you found
+* Do "unlist(producers)" to convert your list of title / producer vector pairs into a named vector of producers.
+    + Use table() to make a table of counts from this vector
+    + Display the 5 producers who produced the most movies from among these 250
+
+```{r}
+imdb="http://www.imdb.com/chart/top"
+imdb.page=readLines(imdb)
+pg = grep(pattern = "/title/tt0111161", x = imdb.page) 
+imdb.lines = imdb.page[pg]
+par = htmlParse('http://www.imdb.com/chart/top');
+movies.urls = xpathSApply(par, "//td[@class='titleColumn']//a", xmlAttrs)[1, ]
+producer.list=list()
+
+for (movie.url in movies.urls[1:250]) {
+  print(movie.url)
+  title=sub('.*/title/(.*)/.*', '\\1', movie.url)
+  imdb.url = paste(sep="", "http://www.imdb.com/title/", title,"/fullcredits")
+  print(imdb.url)
+  movie.tables = readHTMLTable(imdb.url)
+  movie.producers = as.character(movie.tables[[4]]$V1)
+  movie.producers = producer.list[length(producer.list)+1]
+  name.list = unlist(producer.list)
+}
+
+tabled.name=table(name.list)
+head(sort(tabled.name,decreasing=TRUE),5)
+tail(sort(tabled.name),5)
+```
+
+# Part 4: Extra Credit (not required; worth 0, 1, or 2 points)
+
+* Collect Year, Director, Rating, Number of Votes and Cast (first billed only)
+* For each actor, count how many times he or she starred in a Top 250 Movie. Show the 10 actors/actresses that starred in the most movies among the Top 250. Show the 10 actors/actresses that starred in movies among the Top 250 with the highest mean rating.
+* For each director, count how many times he or she directed a Top 250 Movie. Show the 10 directors that directed the most movies among the Top 250. Show the 10 directors that directed movies among the Top 250 with the highest mean rating.
+* Show the 10 most frequent Actor-Director collaborations among the Top 250 Movies. What's the average rating for those collaborations?
+* Are ratings influenced by year? In what way? Provide a P-value using linear regression. Are the assumptions of linear regression violated? If so, what's the impact in your P-value estimate?
+* Do people vote more often for recent movies? Provide a P-value using linear regression. Are the assumptions of linear regression violated? If so, what's the impact in your P-value estimate?
+* In light of the previous question, do you think the number of votes influences the rating? Create an analysis of variance table for the ratings, considering year, votes and the interaction of year and votes. Explain what the interaction means.
+
+```{r}
+# ...
+```

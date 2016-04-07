@@ -1,0 +1,65 @@
+---
+title: "Sect3Q3"
+author: "Tess Steplyk"
+date: "January 26, 2016"
+output: word_document
+---
+
+#1
+x <- c(27,19,17,16,14,21,8,2,20,15,19,24,25,15,28,23,8,5,0,16,15,6,16,3,19,19,8,7,15,26)
+sum(x[seq(0, length(x), 2)])
+
+#2 HELP
+x %in% c(6,13,28,26,24,13,10,19,6,9,3,26,26,24,28)
+19+19+24+28+6+3+19+19+26
+
+#3
+sort(x)
+sum(1:4)
+
+#4
+v = order(x)
+sum(v[1:4])
+
+#5
+summary(x)
+quantile(x, c(0,.2,.4,.6,.8,1))
+7.8+15+17.8+21.4
+
+#6
+y = scan(file = "Hamlet.txt", what = character())
+y
+
+#7
+g = list(fruit="apple", dairy=c("milk", "eggs"), lotto = c(4,2,1,7))
+g
+g$dairy = c("milk", "eggs" ,"butter")
+g
+
+#8
+g$snacks = c("popcorn")
+g
+
+#9
+g$lotto = c(4,2,1,6)
+g
+
+#10
+g$fruit = NULL
+g
+
+#11
+x = list(name=c("Alex","Betty","Chen","David","Eleanor"), score=c(88,93,76,91,80))
+x
+indices.ordered.by.name = order(x$name); indices.ordered.by.name
+(name.sorted = x$name[indices.ordered.by.name])
+name.sorted
+sort(x$score)
+(score.sorted.by.name = x$score[indices.ordered.by.name])
+
+
+
+sum(x[v[1:4]])
+
+
+

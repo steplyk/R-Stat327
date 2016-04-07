@@ -1,0 +1,40 @@
+---
+title: "Sect5Q5"
+author: "Tess Steplyk"
+date: "February 4, 2016"
+output: html_document
+---
+
+#1
+?points
+
+
+#2
+mtcars
+?mtcars
+boxplot(mtcars$mpg~mtcars$gear)
+
+
+#3
+boxplot(Petal.Length~factor(iris$Species), data=iris)
+
+
+#4
+hist(iris$Petal.Length)
+
+
+#5
+plot(density(iris$Petal.Length))
+
+
+#6
+pairs(iris)
+
+
+#8
+counts = table(chickwts$feed) 
+barplot(counts)
+
+
+#9
+matrix(data=c(1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2), nrow=4, ncol=4, byrow=TRUE)

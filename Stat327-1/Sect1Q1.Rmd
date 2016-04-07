@@ -1,0 +1,14 @@
+?round
+round(12.227)
+floor(10.989)
+?pnorm
+pnorm(10.89, 11, 5)
+qnorm(.4,11,5)
+?pt
+pt(0.1, 14)
+?qt
+qt((0.08/2), 14, lower.tail = FALSE)
+pt(0.1, 14, lower.tail = F)
+?dbinom
+dbinom(13, 26, 0.51)
+pbinom(13, 26, 0.51)

@@ -1,0 +1,23 @@
+---
+title: "Quiz 6"
+author: "Tess Steplyk"
+date: "February 9, 2016"
+output: html_document
+---
+
+#1, 2, 3, 4
+x <- c( 4.2, 6, 8.6, 8.1, 10, 5, 7, 3.6, 6.2, 7.1, 9.1, 9.8, 4.2, 7.3, 6.3, 3.2, 5.3, 5.6, 6.2, 4.7)
+t.test(x, mu = 5, conf.level = 0.9)
+
+#5, 6
+XX<-c(4.5, 7.9, 14.8, 13.6, 8)
+YY<-c(4.5, 21.2, -3.6, -1.8, 6.2, 2.4, 1.2)
+var.test(XX, YY)
+
+#7, 8
+mx <- matrix(data = c(19, 12, 15,  15, 12, 15,  14, 18, 12), nrow=3, ncol=3)
+chisq.test(mx)
+
+#9, 10
+out<-binom.test(27, 53)
+prop.test(x=27, n=53, correct =F)

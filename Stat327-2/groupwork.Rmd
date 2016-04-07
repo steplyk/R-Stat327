@@ -1,0 +1,41 @@
+Name: Mike Spear , mspear2@wisc.edu
+Name: Madhur Jajoo , mjajoo@wisc.edu
+Name: Tess Steplyk, steplyk@wisc.edu
+Name: Nakul Narayan, nnarayan@wisc.edu
+Name:
+
+
+```{r}
+if (!require("XML")) {
+  install.packages("XML") # do this once per lifetime
+  stopifnot(require("XML")) # do this once per session
+}
+if (!require("RCurl")) {
+  install.packages("RCurl") # do this once per lifetime
+  stopifnot(require("RCurl")) # do this once per session
+}
+```
+
+
+
+```{r}
+#ALBUMS ="http://www.last.fm/music/The+Beatles/+albums"
+#lines = readLines(ALBUMS)
+alblist = list()
+for (page.no in 1:2){
+  beatles = paste0("http://www.last.fm/music/The+Beatles/+albums?page=", page.no )
+  lines = readLines(beatles)
+  albums = grep(pattern = ".*/player/station/music/The\\+Beatles/.*", x = lines, value = TRUE)
+  alblist = sub(pattern = ".*/player/station/music/The\\+Beatles/(.*)\"", replacement = "\\1", x = albums)
+  
+}
+
+for (i in 1:length(alblist)){
+  album.link = paste0("http://www.last.fm/music/The+Beatles/", alblist[1])
+  album.page = readLines(album.link)
+  table = readHTMLTable(getURL(album.page, ssl.verifypeer = FALSE))
+  
+}
+
+```
+

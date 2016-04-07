@@ -1,0 +1,71 @@
+---
+title: "inclass1-7.R"
+author: "Tess Steplyk"
+date: "January 21, 2016"
+output: word_document
+---
+
+
+## Comments
+
+# comment
+#### comment
+
+4+5
+4 + 5 # prefer this one with spaces
+
+8-10
+
+7/6
+
+(23 %% 3) + 3 * (23 %/% 3)
+
+# calculator functions
+
+exp(1)
+
+exp(10)
+# documentation by ?functionName
+
+log(10)
+log(10, base = exp(1)) # same thing
+
+log(9, base = 3)
+
+sin(pi/2)
+
+sqrt(9)
+
+## other functions
+
+abs(-3)
+floor(-1.5)
+ceiling(-1.5)
+
+round(3.224)
+round(3.224, digits = 0)
+
+round(3.224, digits = 2)
+round(x = 3.224, digits = 2)
+round(digits = 2, x = 3.224)
+
+
+round(3.224, 2) # most common way to use round()
+round(2, 3.224)
+
+## stats distributions
+
+pnorm(1.96)
+qnorm(.025)
+
+pnorm(1.96, lower.tail = F)
+
+XX <- 5 + 3
+
+
+(YY <- 8 - 10)
+
+ZZ = 8
+
+
+round(3.224, digits <- 2)
